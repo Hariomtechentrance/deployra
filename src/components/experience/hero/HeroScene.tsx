@@ -22,8 +22,16 @@ export function HeroScene({
   onIntroComplete: () => void;
   capability: "full" | "reduced";
 }) {
-  const { camera } = useThree();
+  const { camera, viewport } = useThree();
   const parallaxRef = useRef<THREE.Group>(null);
+
+  // The cluster's desktop position/scale were tuned for a wide viewport —
+  // on a narrow (portrait/mobile) one the same world-space x offset falls
+  // outside the camera's much narrower frustum, pushing the laptop off
+  // screen entirely. Scale both down with the actual visible width so it
+  // stays framed at any aspect ratio.
+  const clusterX = Math.min(1.7, viewport.width * 0.26);
+  const clusterScale = Math.min(1, Math.max(0.55, viewport.width / 7));
 
   useGSAP(
     () => {
@@ -63,7 +71,7 @@ export function HeroScene({
       <group ref={parallaxRef}>
         <ParticleField count={2500} radius={7} />
         <FloatingPrimitives />
-        <TechIconCluster position={[1.7, 0, 0]} />
+        <TechIconCluster position={[clusterX, 0, 0]} scale={clusterScale} />
       </group>
     </>
   );

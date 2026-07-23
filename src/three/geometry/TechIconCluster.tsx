@@ -29,8 +29,10 @@ const CLUSTER_RADIUS = 2.2;
 
 export function TechIconCluster({
   position = [0, 0, 0],
+  scale = 1,
 }: {
   position?: [number, number, number];
+  scale?: number;
 }) {
   // Only the icon orbit spins continuously. The laptop is a sibling, not a
   // child, of the orbit group — an asymmetric shape like a laptop would
@@ -47,7 +49,7 @@ export function TechIconCluster({
   });
 
   return (
-    <group position={position}>
+    <group position={position} scale={scale}>
       <Laptop />
       <Pedestal />
 
