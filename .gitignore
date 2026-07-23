@@ -37,10 +37,11 @@ yarn-error.log*
 # vercel
 .vercel
 
-# local contact-submission storage (contains real visitor PII; temporary
-# until this is backed by a real database)
-/data/
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*
+
+/generated/prisma

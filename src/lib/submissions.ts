@@ -1,19 +1,6 @@
 import "server-only";
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import crypto from "node:crypto";
-
-/**
- * File-based storage for contact submissions — a temporary stand-in until
- * a real database is wired up. `saveSubmission`/`getSubmissions` are the
- * only two functions the rest of the app touches; swapping this file for a
- * DB-backed implementation later shouldn't require changes anywhere else.
- *
- * Known limitation: this writes to the local filesystem, which is fine for
- * local dev but does NOT persist reliably on serverless hosts like Vercel
- * (read-only/ephemeral filesystem in production). Fine for now since a
- * real database is the intended next step, not a permanent choice.
- */
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../generated/prisma/client";
 
 export type ContactSubmission = {
   id: string;
@@ -24,23 +11,21 @@ export type ContactSubmission = {
   message: string;
 };
 
-const DATA_DIR = path.join(process.cwd(), "data");
-const DATA_FILE = path.join(DATA_DIR, "contact-submissions.json");
-
-async function readAll(): Promise<ContactSubmission[]> {
-  try {
-    const raw = await fs.readFile(DATA_FILE, "utf-8");
-    return JSON.parse(raw) as ContactSubmission[];
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") return [];
-    throw err;
+function createClient() {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error("Missing DATABASE_URL. See .env.example.");
   }
+  const adapter = new PrismaPg({ connectionString });
+  return new PrismaClient({ adapter });
 }
 
-async function writeAll(submissions: ContactSubmission[]) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(DATA_FILE, JSON.stringify(submissions, null, 2), "utf-8");
-}
+// Reuse a single client across dev hot-reloads instead of opening a fresh
+// pooled connection on every file change — standard Next.js + Prisma
+// pattern to avoid exhausting the database's connection limit.
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+const prisma = globalForPrisma.prisma ?? createClient();
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 export async function saveSubmission(input: {
   name: string;
@@ -48,16 +33,20 @@ export async function saveSubmission(input: {
   company: string | null;
   message: string;
 }): Promise<void> {
-  const submissions = await readAll();
-  submissions.push({
-    id: crypto.randomUUID(),
-    created_at: new Date().toISOString(),
-    ...input,
-  });
-  await writeAll(submissions);
+  await prisma.contactSubmission.create({ data: input });
 }
 
 export async function getSubmissions(): Promise<ContactSubmission[]> {
-  const submissions = await readAll();
-  return submissions.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  const rows = await prisma.contactSubmission.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    created_at: row.createdAt.toISOString(),
+    name: row.name,
+    email: row.email,
+    company: row.company,
+    message: row.message,
+  }));
 }
