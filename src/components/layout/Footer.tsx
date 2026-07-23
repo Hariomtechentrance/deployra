@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { LuLinkedin, LuMapPin } from "react-icons/lu";
 import { SiX, SiGithub, SiInstagram } from "react-icons/si";
 import { NAV_LINKS } from "@/lib/constants/nav";
@@ -18,8 +19,14 @@ export function Footer() {
     <footer className="bg-bg relative border-t border-white/10 px-6 py-16 sm:px-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 md:flex-row md:justify-between">
         <div className="max-w-sm">
-          <div className="border-glass-border bg-glass mb-4 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-bold text-white">
-            D
+          <div className="mb-4 flex h-10 w-10 items-center justify-center">
+            <Image
+              src="/logo.jpeg"
+              alt="Deployra"
+              width={40}
+              height={40}
+              className="h-10 w-10 object-contain"
+            />
           </div>
           <p className="text-sm text-white/60">
             Deployra Private Limited builds AI-powered software, enterprise

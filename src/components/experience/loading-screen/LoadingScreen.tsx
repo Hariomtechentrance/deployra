@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { gsap } from "@/lib/gsap";
 import { useAssetReady } from "./useAssetReady";
@@ -41,9 +42,14 @@ export function LoadingScreen({ onComplete }: { onComplete: () => void }) {
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="bg-bg fixed inset-0 z-50 flex flex-col items-center justify-center gap-6"
     >
-      <p className="text-lg font-semibold tracking-[0.4em] text-white uppercase">
-        Deployra
-      </p>
+      <Image
+        src="/logo.jpeg"
+        alt="Deployra"
+        width={160}
+        height={160}
+        className="h-32 w-32 object-contain sm:h-40 sm:w-40"
+        priority
+      />
       <div className="border-glass-border h-px w-40 overflow-hidden rounded-full border bg-white/5">
         <div
           className="from-primary to-accent h-full bg-gradient-to-r transition-[width] duration-150 ease-out"
