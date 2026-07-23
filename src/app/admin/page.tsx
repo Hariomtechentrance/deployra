@@ -1,29 +1,24 @@
 import type { Metadata } from "next";
-import { getSupabaseAdmin, type ContactSubmission } from "@/lib/supabase";
+import { getSubmissions as loadSubmissions } from "@/lib/submissions";
 import { LogoutButton } from "@/components/admin/LogoutButton";
+import type { ContactSubmission } from "@/lib/submissions";
 
 export const metadata: Metadata = {
   title: "Admin | Deployra",
   robots: { index: false, follow: false },
 };
 
-// Always hit Supabase fresh — this is a private, low-traffic admin view,
+// Always read fresh from disk — this is a private, low-traffic admin view,
 // not something that should ever serve stale/cached data.
 export const dynamic = "force-dynamic";
 
-async function getSubmissions(): Promise<{
+async function getSubmissionsSafely(): Promise<{
   submissions: ContactSubmission[];
   error: string | null;
 }> {
   try {
-    const supabase = getSupabaseAdmin();
-    const { data, error } = await supabase
-      .from("contact_submissions")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) return { submissions: [], error: error.message };
-    return { submissions: data ?? [], error: null };
+    const submissions = await loadSubmissions();
+    return { submissions, error: null };
   } catch (err) {
     return {
       submissions: [],
@@ -33,7 +28,7 @@ async function getSubmissions(): Promise<{
 }
 
 export default async function AdminPage() {
-  const { submissions, error } = await getSubmissions();
+  const { submissions, error } = await getSubmissionsSafely();
 
   return (
     <main className="bg-bg min-h-svh px-6 pt-32 pb-24 sm:px-12">

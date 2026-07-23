@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getSupabaseAdmin } from "@/lib/supabase";
+import { saveSubmission } from "@/lib/submissions";
 
 type ContactPayload = {
   name?: string;
@@ -40,21 +40,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const supabase = getSupabaseAdmin();
-    const { error } = await supabase.from("contact_submissions").insert({
+    await saveSubmission({
       name: name.trim(),
       email: email.trim(),
       company: company?.trim() || null,
       message: message.trim(),
     });
-
-    if (error) {
-      console.error("contact_submissions insert failed:", error.message);
-      return NextResponse.json(
-        { error: "Something went wrong. Please try again." },
-        { status: 500 },
-      );
-    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
