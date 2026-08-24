@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { LuMenu, LuX } from "react-icons/lu";
 import { useExperienceStage } from "@/hooks/useExperienceStage";
 import { NAV_LINKS } from "@/lib/constants/nav";
-import { HERO_COPY, STATUS_LABEL } from "@/lib/constants/copy";
+import { STATUS_LABEL } from "@/lib/constants/copy";
 import { cn } from "@/lib/utils/cn";
 import { SmartLink } from "@/components/shared/SmartLink";
 
@@ -23,7 +23,10 @@ export function Navbar() {
       className="fixed inset-x-0 top-0 z-30 px-4 pt-4 sm:px-8"
     >
       <div className="border-glass-border bg-glass mx-auto flex max-w-6xl items-center justify-between rounded-full border px-5 py-3 backdrop-blur-md">
-        <SmartLink href="/" className="flex h-10 w-10 items-center justify-center">
+        <SmartLink
+          href="/"
+          className="flex h-10 w-10 items-center justify-center"
+        >
           <Image
             src="/logo.jpeg"
             alt="Deployra"
@@ -59,10 +62,10 @@ export function Navbar() {
         </div>
 
         <SmartLink
-          href="/contact"
+          href="/book-appointment"
           className="bg-primary hover:bg-primary/90 hidden rounded-full px-5 py-2 text-sm font-semibold text-black transition-colors md:inline-block"
         >
-          {HERO_COPY.primaryCta}
+          Book a Call
         </SmartLink>
 
         <button
@@ -97,11 +100,11 @@ export function Navbar() {
               </SmartLink>
             ))}
             <SmartLink
-              href="/contact"
+              href="/book-appointment"
               onNavigate={() => setOpen(false)}
               className="bg-primary mt-2 rounded-full px-4 py-2 text-center text-sm font-semibold text-black"
             >
-              {HERO_COPY.primaryCta}
+              Book a Call
             </SmartLink>
           </motion.nav>
         )}

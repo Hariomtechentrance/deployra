@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { LuLinkedin, LuMapPin } from "react-icons/lu";
 import { SiX, SiGithub, SiInstagram } from "react-icons/si";
@@ -14,7 +15,36 @@ const SOCIALS = [
   { Icon: SiInstagram, label: "Instagram" },
 ];
 
+type NewsletterStatus = "idle" | "submitting" | "success" | "error";
+
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [website, setWebsite] = useState("");
+  const [status, setStatus] = useState<NewsletterStatus>("idle");
+
+  const handleNewsletterSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setStatus("submitting");
+
+    try {
+      const response = await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, website }),
+      });
+
+      if (!response.ok) {
+        setStatus("error");
+        return;
+      }
+
+      setStatus("success");
+      setEmail("");
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <footer className="bg-bg relative border-t border-white/10 px-6 py-16 sm:px-12">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 md:flex-row md:justify-between">
@@ -103,22 +133,47 @@ export function Footer() {
             <p className="font-mono text-xs tracking-wider text-white/40 uppercase">
               Stay Updated
             </p>
-            <form
-              onSubmit={(event) => event.preventDefault()}
-              className="mt-4 flex gap-2"
-            >
-              <input
-                type="email"
-                placeholder="you@company.com"
-                className="border-glass-border bg-glass w-48 rounded-full border px-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none"
-              />
-              <button
-                type="submit"
-                className="bg-primary rounded-full px-4 py-2 text-sm font-semibold text-black"
+            {status === "success" ? (
+              <p className="text-success mt-4 text-sm">
+                You&apos;re subscribed 🎉
+              </p>
+            ) : (
+              <form
+                onSubmit={handleNewsletterSubmit}
+                className="relative mt-4 flex gap-2"
               >
-                Join
-              </button>
-            </form>
+                {/* Honeypot — hidden from real visitors, catches basic bots */}
+                <input
+                  type="text"
+                  value={website}
+                  onChange={(event) => setWebsite(event.target.value)}
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="absolute h-0 w-0 opacity-0"
+                />
+                <input
+                  type="email"
+                  required
+                  placeholder="you@company.com"
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  className="border-glass-border bg-glass w-48 rounded-full border px-4 py-2 text-sm text-white placeholder:text-white/40 focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  disabled={status === "submitting"}
+                  className="bg-primary rounded-full px-4 py-2 text-sm font-semibold text-black disabled:opacity-60"
+                >
+                  {status === "submitting" ? "…" : "Join"}
+                </button>
+              </form>
+            )}
+            {status === "error" && (
+              <p className="mt-2 text-xs text-red-400">
+                Something went wrong. Try again.
+              </p>
+            )}
 
             <div className="mt-6 flex gap-3">
               {SOCIALS.map(({ Icon, label }) => (
@@ -136,7 +191,8 @@ export function Footer() {
       </div>
 
       <p className="mx-auto mt-12 max-w-6xl border-t border-white/10 pt-6 text-xs text-white/40">
-        © {new Date().getFullYear()} Deployra Private Limited. All rights reserved.
+        © {new Date().getFullYear()} Deployra Private Limited. All rights
+        reserved.
       </p>
     </footer>
   );

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { saveSubmission } from "@/lib/submissions";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
 
 type ContactPayload = {
   name?: string;
@@ -14,6 +15,13 @@ type ContactPayload = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
+  if (!rateLimit(`contact:${getClientIp(request)}`, 5, 10 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   let body: ContactPayload;
   try {
     body = await request.json();

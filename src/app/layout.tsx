@@ -7,6 +7,8 @@ import { SmoothScrollProvider } from "@/components/layout/SmoothScrollProvider";
 import { ExperienceStageProvider } from "@/components/layout/ExperienceStageProvider";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { FloatingContactBar } from "@/components/shared/FloatingContactBar";
+import { ChatWidget } from "@/components/shared/ChatWidget";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,7 +17,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Deployra | Engineering the Future with AI, Software & Digital Innovation",
+  title:
+    "Deployra | Engineering the Future with AI, Software & Digital Innovation",
   description:
     "Deployra Private Limited builds AI-powered software, enterprise platforms, mobile applications, and cloud solutions that help startups and enterprises scale with confidence.",
 };
@@ -37,6 +40,8 @@ export default function RootLayout({
               <Navbar />
               {children}
               <Footer />
+              <FloatingContactBar />
+              <ChatWidget />
             </ExperienceStageProvider>
           </SmoothScrollProvider>
         </MotionConfig>

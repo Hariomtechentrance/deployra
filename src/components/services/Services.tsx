@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "motion/react";
+import { LuArrowRight } from "react-icons/lu";
 import { SERVICES } from "@/lib/constants/services";
+import { SmartLink } from "@/components/shared/SmartLink";
 
 export function Services() {
   return (
@@ -15,7 +17,7 @@ export function Services() {
         </h2>
 
         <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {SERVICES.map(({ Icon, title, description }, i) => (
+          {SERVICES.map(({ slug, Icon, title, description }, i) => (
             <motion.div
               key={title}
               initial={{ opacity: 0, y: 24 }}
@@ -29,6 +31,12 @@ export function Services() {
               </div>
               <h3 className="mt-5 text-lg font-semibold text-white">{title}</h3>
               <p className="mt-2 text-sm text-white/60">{description}</p>
+              <SmartLink
+                href={`/services/${slug}`}
+                className="text-accent mt-4 inline-flex items-center gap-1.5 text-sm font-medium hover:text-white"
+              >
+                Learn more <LuArrowRight size={14} />
+              </SmartLink>
             </motion.div>
           ))}
         </div>

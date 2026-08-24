@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
-import { getSubmissions as loadSubmissions } from "@/lib/submissions";
+import {
+  getSubmissions,
+  getAppointments,
+  getCareerApplications,
+  getNewsletterSubscribers,
+} from "@/lib/submissions";
 import { LogoutButton } from "@/components/admin/LogoutButton";
-import type { ContactSubmission } from "@/lib/submissions";
+import { AdminTabs } from "@/components/admin/AdminTabs";
 
 export const metadata: Metadata = {
   title: "Admin | Deployra",
@@ -12,23 +17,34 @@ export const metadata: Metadata = {
 // not something that should ever serve stale/cached data.
 export const dynamic = "force-dynamic";
 
-async function getSubmissionsSafely(): Promise<{
-  submissions: ContactSubmission[];
-  error: string | null;
-}> {
+async function safely<T>(
+  fn: () => Promise<T[]>,
+): Promise<{ data: T[]; error: string | null }> {
   try {
-    const submissions = await loadSubmissions();
-    return { submissions, error: null };
+    return { data: await fn(), error: null };
   } catch (err) {
     return {
-      submissions: [],
-      error: err instanceof Error ? err.message : "Failed to load submissions.",
+      data: [],
+      error: err instanceof Error ? err.message : "Failed to load data.",
     };
   }
 }
 
 export default async function AdminPage() {
-  const { submissions, error } = await getSubmissionsSafely();
+  const [contacts, appointments, applications, subscribers] = await Promise.all(
+    [
+      safely(getSubmissions),
+      safely(getAppointments),
+      safely(getCareerApplications),
+      safely(getNewsletterSubscribers),
+    ],
+  );
+
+  const total =
+    contacts.data.length +
+    appointments.data.length +
+    applications.data.length +
+    subscribers.data.length;
 
   return (
     <main className="bg-bg min-h-svh px-6 pt-32 pb-24 sm:px-12">
@@ -39,57 +55,20 @@ export default async function AdminPage() {
               Admin
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-white">
-              Contact Submissions
+              Dashboard
             </h1>
-            <p className="mt-2 text-sm text-white/50">
-              {submissions.length} total
-            </p>
+            <p className="mt-2 text-sm text-white/50">{total} total records</p>
           </div>
           <LogoutButton />
         </div>
 
-        {error && (
-          <p className="border-glass-border bg-glass mt-8 rounded-xl border px-4 py-3 text-sm text-red-400">
-            Couldn&apos;t load submissions: {error}
-          </p>
-        )}
-
-        {!error && submissions.length === 0 && (
-          <p className="border-glass-border bg-glass mt-8 rounded-xl border px-4 py-6 text-center text-sm text-white/50">
-            No submissions yet.
-          </p>
-        )}
-
-        <div className="mt-8 flex flex-col gap-4">
-          {submissions.map((submission) => (
-            <div
-              key={submission.id}
-              className="border-glass-border bg-glass rounded-2xl border p-6 backdrop-blur-md"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <p className="text-base font-semibold text-white">
-                  {submission.name}
-                  {submission.company && (
-                    <span className="ml-2 font-normal text-white/50">
-                      — {submission.company}
-                    </span>
-                  )}
-                </p>
-                <p className="font-mono text-xs text-white/40">
-                  {new Date(submission.created_at).toLocaleString()}
-                </p>
-              </div>
-              <a
-                href={`mailto:${submission.email}`}
-                className="text-accent mt-1 inline-block text-sm hover:text-white"
-              >
-                {submission.email}
-              </a>
-              <p className="mt-3 text-sm whitespace-pre-wrap text-white/75">
-                {submission.message}
-              </p>
-            </div>
-          ))}
+        <div className="mt-8">
+          <AdminTabs
+            contacts={contacts}
+            appointments={appointments}
+            applications={applications}
+            subscribers={subscribers}
+          />
         </div>
       </div>
     </main>

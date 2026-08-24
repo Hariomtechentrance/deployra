@@ -21,7 +21,7 @@ export function ServicesDetail() {
         </p>
 
         <div className="mt-16 flex flex-col gap-6">
-          {SERVICES.map(({ Icon, title, description, features }, i) => (
+          {SERVICES.map(({ slug, Icon, title, description, features }, i) => (
             <motion.div
               key={title}
               initial={{ opacity: 0, y: 24 }}
@@ -38,6 +38,12 @@ export function ServicesDetail() {
                   {title}
                 </h2>
                 <p className="mt-2 text-sm text-white/60">{description}</p>
+                <SmartLink
+                  href={`/services/${slug}`}
+                  className="text-accent mt-4 inline-block text-sm font-medium hover:text-white"
+                >
+                  Learn more →
+                </SmartLink>
               </div>
 
               <ul className="flex flex-col gap-3 sm:justify-center">
@@ -46,7 +52,10 @@ export function ServicesDetail() {
                     key={feature}
                     className="flex items-start gap-2.5 text-sm text-white/75"
                   >
-                    <LuCheck size={16} className="text-success mt-0.5 shrink-0" />
+                    <LuCheck
+                      size={16}
+                      className="text-success mt-0.5 shrink-0"
+                    />
                     {feature}
                   </li>
                 ))}

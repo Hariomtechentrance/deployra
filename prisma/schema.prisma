@@ -17,3 +17,50 @@ model ContactSubmission {
 
   @@map("contact_submissions")
 }
+
+model Appointment {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now()) @map("created_at")
+  type        String
+  date        String
+  time        String
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  email       String
+  phone       String
+  companyName String?  @map("company_name")
+  notes       String?
+
+  @@map("appointments")
+}
+
+model CareerApplication {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now()) @map("created_at")
+  firstName       String   @map("first_name")
+  lastName        String   @map("last_name")
+  email           String
+  phone           String
+  currentPosition String   @map("current_position")
+  experienceLevel String   @map("experience_level")
+  position        String
+  location        String
+  portfolioUrl    String?  @map("portfolio_url")
+  coverLetter     String?  @map("cover_letter")
+  availability    String
+  expectedSalary  String?  @map("expected_salary")
+  resumeFileName  String?  @map("resume_file_name")
+  resumeMimeType  String?  @map("resume_mime_type")
+  resumeData      Bytes?   @map("resume_data")
+
+  @@map("career_applications")
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  email     String   @unique
+  name      String?
+
+  @@map("newsletter_subscribers")
+}

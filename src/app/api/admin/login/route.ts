@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { NextResponse } from "next/server";
 import { ADMIN_SESSION_COOKIE, signAdminSession } from "@/lib/auth";
+import { getClientIp, rateLimit } from "@/lib/rateLimit";
 
 function timingSafeEqual(a: string, b: string) {
   const bufA = Buffer.from(a);
@@ -10,6 +11,13 @@ function timingSafeEqual(a: string, b: string) {
 }
 
 export async function POST(request: Request) {
+  if (!rateLimit(`admin-login:${getClientIp(request)}`, 5, 15 * 60 * 1000)) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please try again later." },
+      { status: 429 },
+    );
+  }
+
   const adminPassword = process.env.ADMIN_PASSWORD;
   if (!adminPassword) {
     return NextResponse.json(
