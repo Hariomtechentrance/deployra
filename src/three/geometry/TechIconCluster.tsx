@@ -65,7 +65,12 @@ export function TechIconCluster({
                 ease: "easeInOut",
                 delay: i * 0.15,
               }}
-              className="border-glass-border bg-glass flex h-11 w-11 items-center justify-center rounded-xl border text-white/85 shadow-[0_0_16px_rgba(255,215,0,0.15)] backdrop-blur-md"
+              // On narrow viewports there isn't enough width for the
+              // headline text and the projected icon badges to share the
+              // screen without overlapping — hide the badges below `md`,
+              // same breakpoint the non-3D fallback hero already uses for
+              // its own copy of these icons.
+              className="border-glass-border bg-glass hidden h-11 w-11 items-center justify-center rounded-xl border text-white/85 shadow-[0_0_16px_rgba(255,215,0,0.15)] backdrop-blur-md md:flex"
               title={label}
             >
               <Icon size={18} />
