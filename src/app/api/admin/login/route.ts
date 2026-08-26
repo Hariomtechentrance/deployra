@@ -37,7 +37,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Incorrect password." }, { status: 401 });
   }
 
-  const token = await signAdminSession();
+  let token: string;
+  try {
+    token = await signAdminSession();
+  } catch (err) {
+    console.error("Admin session signing error:", err);
+    return NextResponse.json(
+      { error: "Admin login is not configured." },
+      { status: 500 },
+    );
+  }
+
   const response = NextResponse.json({ ok: true });
   response.cookies.set(ADMIN_SESSION_COOKIE, token, {
     httpOnly: true,
