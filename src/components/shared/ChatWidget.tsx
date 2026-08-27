@@ -9,7 +9,6 @@ import { CONTACT_INFO } from "@/lib/constants/contact";
 const whatsappNumber = CONTACT_INFO.phones[0].replace(/\D/g, "");
 
 const QUICK_REPLIES: { label: string; href: string; external?: boolean }[] = [
-  { label: "💰 See Pricing", href: "/#pricing" },
   { label: "🛠️ Our Services", href: "/services" },
   { label: "📅 Book a Free Call", href: "/book-appointment" },
   {
