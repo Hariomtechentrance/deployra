@@ -9,17 +9,20 @@ import type {
   Appointment,
   CareerApplication,
   NewsletterSubscriber,
+  Testimonial,
 } from "@/lib/submissions";
 import { AdminContacts } from "@/components/admin/AdminContacts";
 import { AdminAppointments } from "@/components/admin/AdminAppointments";
 import { AdminCareerApplications } from "@/components/admin/AdminCareerApplications";
 import { AdminNewsletter } from "@/components/admin/AdminNewsletter";
+import { AdminTestimonials } from "@/components/admin/AdminTestimonials";
 
 type Props = {
   contacts: { data: ContactSubmission[]; error: string | null };
   appointments: { data: Appointment[]; error: string | null };
   applications: { data: CareerApplication[]; error: string | null };
   subscribers: { data: NewsletterSubscriber[]; error: string | null };
+  testimonials: { data: Testimonial[]; error: string | null };
 };
 
 export function AdminTabs({
@@ -27,6 +30,7 @@ export function AdminTabs({
   appointments,
   applications,
   subscribers,
+  testimonials,
 }: Props) {
   const tabs = [
     { key: "contacts", label: "Contacts", count: contacts.data.length },
@@ -41,6 +45,11 @@ export function AdminTabs({
       count: applications.data.length,
     },
     { key: "newsletter", label: "Newsletter", count: subscribers.data.length },
+    {
+      key: "testimonials",
+      label: "Testimonials",
+      count: testimonials.data.length,
+    },
   ] as const;
 
   const [active, setActive] =
@@ -51,6 +60,7 @@ export function AdminTabs({
     appointments: appointments.error,
     applications: applications.error,
     newsletter: subscribers.error,
+    testimonials: testimonials.error,
   };
   const activeError = errorsByTab[active];
 
@@ -59,6 +69,7 @@ export function AdminTabs({
     appointments: appointments.data,
     applications: applications.data,
     newsletter: subscribers.data,
+    testimonials: testimonials.data,
   };
   const activeData = dataByTab[active];
 
@@ -111,6 +122,9 @@ export function AdminTabs({
         )}
         {active === "newsletter" && (
           <AdminNewsletter subscribers={subscribers.data} />
+        )}
+        {active === "testimonials" && (
+          <AdminTestimonials testimonials={testimonials.data} />
         )}
       </div>
     </div>

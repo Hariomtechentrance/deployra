@@ -64,3 +64,15 @@ model NewsletterSubscriber {
 
   @@map("newsletter_subscribers")
 }
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  name      String
+  role      String?
+  email     String?
+  rating    Int
+  quote     String
+
+  @@map("testimonials")
+}

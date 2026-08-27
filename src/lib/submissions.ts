@@ -230,3 +230,80 @@ export async function getNewsletterSubscribers(): Promise<
     name: row.name,
   }));
 }
+
+// Public shape — no email. Testimonials go live immediately (no admin
+// approval step), so this must never leak the submitter's email address
+// to the homepage.
+export type PublicTestimonial = {
+  id: string;
+  created_at: string;
+  name: string;
+  role: string | null;
+  rating: number;
+  quote: string;
+};
+
+// Admin shape — includes email so you can follow up on / verify a review.
+export type Testimonial = PublicTestimonial & { email: string | null };
+
+export async function saveTestimonial(input: {
+  name: string;
+  role: string | null;
+  email: string | null;
+  rating: number;
+  quote: string;
+}): Promise<PublicTestimonial> {
+  const row = await prisma.testimonial.create({ data: input });
+  return {
+    id: row.id,
+    created_at: row.createdAt.toISOString(),
+    name: row.name,
+    role: row.role,
+    rating: row.rating,
+    quote: row.quote,
+  };
+}
+
+export async function getPublicTestimonials(): Promise<PublicTestimonial[]> {
+  const rows = await prisma.testimonial.findMany({
+    orderBy: { createdAt: "desc" },
+    take: 30,
+    select: {
+      id: true,
+      createdAt: true,
+      name: true,
+      role: true,
+      rating: true,
+      quote: true,
+    },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    created_at: row.createdAt.toISOString(),
+    name: row.name,
+    role: row.role,
+    rating: row.rating,
+    quote: row.quote,
+  }));
+}
+
+export async function getTestimonials(): Promise<Testimonial[]> {
+  const rows = await prisma.testimonial.findMany({
+    orderBy: { createdAt: "desc" },
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    created_at: row.createdAt.toISOString(),
+    name: row.name,
+    role: row.role,
+    email: row.email,
+    rating: row.rating,
+    quote: row.quote,
+  }));
+}
+
+export async function deleteTestimonial(id: string): Promise<void> {
+  await prisma.testimonial.delete({ where: { id } });
+}

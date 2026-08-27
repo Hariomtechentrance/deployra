@@ -4,6 +4,7 @@ import {
   getAppointments,
   getCareerApplications,
   getNewsletterSubscribers,
+  getTestimonials,
 } from "@/lib/submissions";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 import { AdminTabs } from "@/components/admin/AdminTabs";
@@ -31,20 +32,21 @@ async function safely<T>(
 }
 
 export default async function AdminPage() {
-  const [contacts, appointments, applications, subscribers] = await Promise.all(
-    [
+  const [contacts, appointments, applications, subscribers, testimonials] =
+    await Promise.all([
       safely(getSubmissions),
       safely(getAppointments),
       safely(getCareerApplications),
       safely(getNewsletterSubscribers),
-    ],
-  );
+      safely(getTestimonials),
+    ]);
 
   const total =
     contacts.data.length +
     appointments.data.length +
     applications.data.length +
-    subscribers.data.length;
+    subscribers.data.length +
+    testimonials.data.length;
 
   return (
     <main className="bg-bg min-h-svh px-6 pt-32 pb-24 sm:px-12">
@@ -68,6 +70,7 @@ export default async function AdminPage() {
             appointments={appointments}
             applications={applications}
             subscribers={subscribers}
+            testimonials={testimonials}
           />
         </div>
       </div>
