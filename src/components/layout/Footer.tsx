@@ -3,16 +3,27 @@
 import { useState } from "react";
 import Image from "next/image";
 import { LuLinkedin, LuMapPin } from "react-icons/lu";
-import { SiX, SiGithub, SiInstagram } from "react-icons/si";
+import { SiFacebook, SiInstagram } from "react-icons/si";
 import { NAV_LINKS } from "@/lib/constants/nav";
 import { CONTACT_INFO } from "@/lib/constants/contact";
 import { SmartLink } from "@/components/shared/SmartLink";
 
 const SOCIALS = [
-  { Icon: LuLinkedin, label: "LinkedIn" },
-  { Icon: SiX, label: "X" },
-  { Icon: SiGithub, label: "GitHub" },
-  { Icon: SiInstagram, label: "Instagram" },
+  {
+    Icon: LuLinkedin,
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/company/deplopyra-india/",
+  },
+  {
+    Icon: SiFacebook,
+    label: "Facebook",
+    href: "https://www.facebook.com/share/1CHiMFJ5x5/",
+  },
+  {
+    Icon: SiInstagram,
+    label: "Instagram",
+    href: "https://www.instagram.com/deployra?rpxt=ZGdwa3hxdzQ0MnJ2",
+  },
 ];
 
 type NewsletterStatus = "idle" | "submitting" | "success" | "error";
@@ -176,14 +187,17 @@ export function Footer() {
             )}
 
             <div className="mt-6 flex gap-3">
-              {SOCIALS.map(({ Icon, label }) => (
-                <span
+              {SOCIALS.map(({ Icon, label, href }) => (
+                <a
                   key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={label}
-                  className="border-glass-border bg-glass flex h-9 w-9 items-center justify-center rounded-full border text-white/70"
+                  className="border-glass-border bg-glass flex h-9 w-9 items-center justify-center rounded-full border text-white/70 transition-colors hover:text-white"
                 >
                   <Icon size={16} />
-                </span>
+                </a>
               ))}
             </div>
           </div>
