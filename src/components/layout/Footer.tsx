@@ -190,10 +190,15 @@ export function Footer() {
         </div>
       </div>
 
-      <p className="mx-auto mt-12 max-w-6xl border-t border-white/10 pt-6 text-xs text-white/40">
-        © {new Date().getFullYear()} Deployra Private Limited. All rights
-        reserved.
-      </p>
+      <div className="mx-auto mt-12 flex max-w-6xl flex-col gap-3 border-t border-white/10 pt-6 text-xs text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <p>
+          © {new Date().getFullYear()} Deployra Private Limited. All rights
+          reserved.
+        </p>
+        <SmartLink href="/privacy-policy" className="hover:text-white/70">
+          Privacy Policy
+        </SmartLink>
+      </div>
     </footer>
   );
 }

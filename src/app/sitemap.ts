@@ -13,6 +13,7 @@ const STATIC_ROUTES = [
   "/careers",
   "/book-appointment",
   "/contact",
+  "/privacy-policy",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
