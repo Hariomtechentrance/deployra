@@ -14,7 +14,7 @@
     sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
 
-  --text-hero: clamp(2.5rem, 6vw, 5.5rem);
+  --text-hero: clamp(2.5rem, 4.25vw, 4.5rem);
   --text-eyebrow: clamp(0.8125rem, 1vw, 0.9375rem);
 }
 

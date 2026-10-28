@@ -22,16 +22,29 @@ export function HeroScene({
   onIntroComplete: () => void;
   capability: "full" | "reduced";
 }) {
-  const { camera, viewport } = useThree();
+  const { camera, viewport, size } = useThree();
   const parallaxRef = useRef<THREE.Group>(null);
 
-  // The cluster's desktop position/scale were tuned for a wide viewport —
-  // on a narrow (portrait/mobile) one the same world-space x offset falls
-  // outside the camera's much narrower frustum, pushing the laptop off
-  // screen entirely. Scale both down with the actual visible width so it
-  // stays framed at any aspect ratio.
-  const clusterX = Math.min(1.7, viewport.width * 0.26);
-  const clusterScale = Math.min(1, Math.max(0.55, viewport.width / 7));
+  // Below this width there isn't enough horizontal room for the headline
+  // and the product model to share the screen without colliding — drop
+  // the model entirely, same as the orbiting tech-icon badges already do
+  // at `md`. The headline and background particles still render fine on
+  // their own.
+  const showCluster = size.width >= 1024;
+
+  // Anchor the model in real screen pixels, not Three.js world units.
+  // World units (viewport.width) are derived purely from the canvas's
+  // aspect ratio, so two windows with the *same* aspect ratio but very
+  // different pixel widths (e.g. a 1280x800 laptop vs a 1920x1200
+  // monitor) produced an *identical* world-space position — while the
+  // headline next to it is sized with vw units, i.e. real pixels, and
+  // kept growing as the window did. That mismatch is what let the model
+  // drift into the headline's column at some sizes. Pixels keep both in
+  // the same coordinate space, so the gap between them stays consistent.
+  const pxPerWorldUnit = size.width / viewport.width;
+  const clusterScale = Math.min(1, Math.max(0.7, size.width / 1400));
+  const targetOffsetPx = size.width * 0.18;
+  const clusterX = Math.min(2.4, targetOffsetPx / pxPerWorldUnit);
 
   useGSAP(
     () => {
@@ -71,7 +84,9 @@ export function HeroScene({
       <group ref={parallaxRef}>
         <ParticleField count={2500} radius={7} />
         <FloatingPrimitives />
-        <TechIconCluster position={[clusterX, 0, 0]} scale={clusterScale} />
+        {showCluster && (
+          <TechIconCluster position={[clusterX, 0, 0]} scale={clusterScale} />
+        )}
       </group>
     </>
   );

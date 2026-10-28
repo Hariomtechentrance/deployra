@@ -35,7 +35,7 @@ export function HeroContent({
         initial={{ opacity: 0, y: 24 }}
         animate={showHeadline ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.7, delay: 0.1 }}
-        className={cn("text-hero leading-[1.05] font-semibold", isLeft ? "max-w-xl" : "max-w-4xl")}
+        className={cn("text-hero leading-[1.05] font-semibold", isLeft ? "max-w-md" : "max-w-4xl")}
       >
         {HERO_COPY.headline.map((line, i) => (
           <span key={line} className="block">
